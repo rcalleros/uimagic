@@ -75,7 +75,8 @@
               "browserTarget": "uimagic:build:production"
             },
             "development": {
-              "browserTarget": "uimagic:build:development"
+              "browserTarget": "uimagic:build:development",
+              "proxyConfig": "src/proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

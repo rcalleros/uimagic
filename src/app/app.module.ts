@@ -1,18 +1,23 @@
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+import { ModifyUser } from 'src/screens/modify-user/modify-user.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { APIService } from 'src/services/APIService';
+import { LoginComponent } from '../screens/login/login.component';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent, ModifyUser, LoginComponent],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [APIService],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

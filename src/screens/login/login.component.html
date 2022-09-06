@@ -1,0 +1,8 @@
+<h1>Login</h1>
+<form class="theme-form" [formGroup]="loginForm" (ngSubmit)="submitForm()">
+  <label>Username / Email</label>
+  <input id="username" type="text" formControlName="identifier" />
+  <label>Password</label>
+  <input id="password" type="text" formControlName="password" />
+  <button class="button" type="submit">Login</button>
+</form>

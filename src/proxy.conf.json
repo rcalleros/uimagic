@@ -1,0 +1,6 @@
+{
+  "/api": {
+    "target": "http://uimagic.lo:8080",
+    "secure": false
+  }
+}

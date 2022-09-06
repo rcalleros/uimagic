@@ -1,0 +1,16 @@
+<h1>Add New User</h1>
+<form class="theme-form" [formGroup]="modifyUserForm" (ngSubmit)="submitForm()">
+  <label>First Name</label>
+  <input id="firstname" type="text" formControlName="firstname" />
+  <label>Last Name</label>
+  <input id="lastname" type="text" formControlName="lastname" />
+  <label>Email</label>
+  <input id="email" type="text" formControlName="email" />
+  <label>Username</label>
+  <input id="username" type="text" formControlName="username" />
+  <label>Password</label>
+  <input id="password" type="text" formControlName="password" />
+  <label>Confirm Password</label>
+  <input id="confirmpassword" type="text" formControlName="confirmpassword" />
+  <button class="button" type="submit">Save</button>
+</form>
