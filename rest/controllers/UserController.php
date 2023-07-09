@@ -1,8 +1,6 @@
 <?php
 namespace Src\Controller;
-require 'database/user/UserGateway.php';
-
-use Src\TableGateways\UserGateway;
+use Src\TableGateways\UserGateway as userGateway;
 
 class UserController {
 
@@ -17,7 +15,7 @@ class UserController {
         $this->requestMethod = $requestMethod;
         $this->userId = $userId;
 
-        $this->userGateway = new UserGateway($db);
+        $this->userGateway = new userGateway($db);
     }
 
     public function processRequest()
@@ -40,7 +38,7 @@ class UserController {
                 $response = $this->deleteUser($this->userId);
                 break;
             default:
-                $response = $this->notFoundResponse();
+                $response = notFoundResponse();
                 break;
         }
         header($response['status_code_header']);
@@ -61,7 +59,7 @@ class UserController {
     {
         $result = $this->userGateway->find($id);
         if (! $result) {
-            return $this->notFoundResponse();
+            return notFoundResponse();
         }
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($result);
@@ -75,9 +73,9 @@ class UserController {
         $input = (array) json_decode(file_get_contents('php://input'), TRUE);
         $errorObject = $this->validatePerson($input);
         if (count($errorObject['data']) > 0) {
-            return $this->unprocessableEntityResponse($errorObject);
+            return unprocessableEntityResponse($errorObject);
         }
-      //  $this->userGateway->insert($input);
+        $this->userGateway->insert($input);
         $response['status_code_header'] = 'HTTP/1.1 201 Created';
         $response['body'] = null;
         return $response;
@@ -87,12 +85,12 @@ class UserController {
     {
         $result = $this->userGateway->find($id);
         if (! $result) {
-            return $this->notFoundResponse();
+            return notFoundResponse();
         }
         $input = (array) json_decode(file_get_contents('php://input'), TRUE);
         $errorList = $this->validatePerson($input);
         if ( $this->validatePerson($input)) {
-            return $this->unprocessableEntityResponse($errorList);
+            return unprocessableEntityResponse($errorList);
         }
         $this->userGateway->update($id, $input);
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
@@ -104,7 +102,7 @@ class UserController {
     {
         $result = $this->userGateway->find($id);
         if (! $result) {
-            return $this->notFoundResponse();
+            return notFoundResponse();
         }
         $this->userGateway->delete($id);
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
@@ -196,18 +194,6 @@ class UserController {
         return $responseObject;
     }
 
-    private function unprocessableEntityResponse($errorObj)
-    {
-        $response['status_code_header'] = 'HTTP/1.1 400 (Bad Request)';
-        $response['body'] = json_encode($errorObj);
-        return $response;
-    }
 
-    private function notFoundResponse()
-    {
-        $response['status_code_header'] = 'HTTP/1.1 404 Not Found';
-        $response['body'] = null;
-        return $response;
-    }
     
 }

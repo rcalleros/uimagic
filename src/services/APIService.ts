@@ -18,4 +18,7 @@ export class APIService {
   apiPostRequest(url: string, data: any) {
     return this.http.post(url, data);
   }
+  apiGETRequest(url: string, params?: any) {
+    return this.http.get(url, { params });
+  }
 }
