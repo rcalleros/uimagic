@@ -1,7 +1,9 @@
 <?php
+
 namespace Src\TableGateways;
 
-class UserGateway {
+class UserGateway
+{
 
     private $db = null;
 
@@ -45,9 +47,31 @@ class UserGateway {
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }    
+        }
     }
- public function  findUserWithIdentifier($user_identifier)
+
+    public function findUserWithAuthToken($token)
+    {
+        $statement = "
+            SELECT 
+                *
+            FROM
+                authenticated_users
+            WHERE auth_token = ?;
+        ";
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array($token));
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            return $result;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+
+
+    public function  findUserWithIdentifier($user_identifier)
     {
         $statement = "
             SELECT 
@@ -62,14 +86,14 @@ class UserGateway {
             $statement = $this->db->prepare($statement);
             $statement->execute(array($user_identifier));
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            if(count($result) > 0){
+            if (count($result) > 0) {
                 return $result[0];
             }
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }    
+        }
     }
-    public function insert(Array $input)
+    public function insert(array $input)
     {
         $statement = "
             INSERT INTO users 
@@ -94,10 +118,10 @@ class UserGateway {
         } catch (\PDOException $e) {
             header("HTTP/1.1 500 Server Error");
             exit($e->getMessage());
-        }    
+        }
     }
 
-    public function update($id, Array $input)
+    public function update($id, array $input)
     {
         $statement = "
             UPDATE users
@@ -121,7 +145,7 @@ class UserGateway {
             return $statement->rowCount();
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }    
+        }
     }
 
     public function delete($id)
@@ -137,10 +161,10 @@ class UserGateway {
             return $statement->rowCount();
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }    
+        }
     }
 
-     public function isEmailUnique($email)
+    public function isEmailUnique($email)
     {
         $statement = "
             SELECT * FROM users
@@ -153,7 +177,7 @@ class UserGateway {
             return $statement->rowCount();
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }    
+        }
     }
     public function isUsernameUnique($username)
     {
@@ -168,9 +192,9 @@ class UserGateway {
             return $statement->rowCount();
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }    
+        }
     }
-     public function doesAuthSessionExist(Int $userId)
+    public function doesAuthSessionExist(Int $userId)
     {
         $statement = "
             SELECT * FROM authenticated_users
@@ -183,13 +207,14 @@ class UserGateway {
             return $statement->rowCount() > 0;
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }    
+        }
     }
-    public function hasPermission($user_id, $pw){
+    public function hasPermission($user_id, $pw)
+    {
         $user = $this->find($user_id);
     }
 
-    public function insertToken(Int $userId, $token )
+    public function insertToken(Int $userId, $token)
     {
         $statement = "
             INSERT INTO authenticated_users 
@@ -208,18 +233,19 @@ class UserGateway {
         } catch (\PDOException $e) {
             header("HTTP/1.1 500 Server Error");
             exit($e->getMessage());
-        }    
+        }
     }
-    public function getAuthToken($userId){
+    public function getAuthToken($userId)
+    {
         $token = $this->random_str(64);
-        if($this->doesAuthSessionExist($userId)){
+        if ($this->doesAuthSessionExist($userId)) {
             $this->updateToken($userId, $token);
         } else {
             $this->insertToken($userId, $token);
         }
         return $token;
     }
-    public function updateToken(Int $userId, $token )
+    public function updateToken(Int $userId, $token)
     {
         $statement = "
             UPDATE authenticated_users
@@ -237,20 +263,19 @@ class UserGateway {
         } catch (\PDOException $e) {
             header("HTTP/1.1 500 Server Error");
             exit($e->getMessage());
-        }    
+        }
     }
 
-    public function random_str(int $length = 64, string $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'): string {
+    public function random_str(int $length = 64, string $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'): string
+    {
         if ($length < 1) {
             throw new \RangeException("Length must be a positive integer");
         }
         $pieces = [];
         $max = mb_strlen($keyspace, '8bit') - 1;
         for ($i = 0; $i < $length; ++$i) {
-            $pieces []= $keyspace[random_int(0, $max)];
+            $pieces[] = $keyspace[random_int(0, $max)];
         }
         return implode('', $pieces);
     }
-
 }
-?>

@@ -16,16 +16,16 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 $requestUri = $_SERVER['REQUEST_URI'];
 $uri = parse_url($requestUri, PHP_URL_PATH);
-$uri = explode( '/api/', $uri );
+$uri = explode('/api/', $uri);
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $token = getBearerToken();
-if(empty($token) && isValidApiEndpoint($requestUri, $requestMethod)){
+if (empty($token) && isValidApiEndpoint($requestUri, $requestMethod)) {
   header("HTTP/1.1 403 Forbidden");
   exit();
 }
 // login
-if( !empty($uri) && $uri[1] === 'login'){
+if (!empty($uri) && $uri[1] === 'login') {
 
   $controller = new LoginControls($dbConnection, $requestMethod);
   $controller->processRequest();
@@ -33,12 +33,21 @@ if( !empty($uri) && $uri[1] === 'login'){
 
 
 // user
-if( $uri[1] === 'user'){
+if ($uri[1] === 'user') {
   // the user id is, of course, optional and must be a number:
   $userId = null;
   if (isset($uri[2])) {
-      $userId = (int) $uri[2];
+    $userId = (int) $uri[2];
   }
+  // pass the request method and user ID to the PersonController and process the HTTP request:
+  $controller = new UserControls($dbConnection, $requestMethod, $userId);
+  $controller->processRequest();
+}
+
+// user
+if ($uri[1] === 'users') {
+  // the user id is, of course, optional and must be a number:
+  $userId = null;
   // pass the request method and user ID to the PersonController and process the HTTP request:
   $controller = new UserControls($dbConnection, $requestMethod, $userId);
   $controller->processRequest();
@@ -47,5 +56,3 @@ if( $uri[1] === 'user'){
 // if($uri[1] === 'video_content'){
 //  echo 'gimme some video content';
 // }
-
-?>

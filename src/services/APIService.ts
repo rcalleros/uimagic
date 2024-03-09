@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
@@ -15,10 +15,13 @@ export interface Config {
 export class APIService {
   constructor(private http: HttpClient) {}
 
-  apiPostRequest(url: string, data: any) {
+  apiPostRequest(url: string, data: any):Observable<any> {
     return this.http.post(url, data);
   }
   apiGETRequest(url: string, params?: any) {
-    return this.http.get(url, { params });
+    const token = sessionStorage.getItem('AUTH_TOKEN')
+    const headers = new HttpHeaders().set('Authorization',`Bearer ${token}`);
+
+    return this.http.get(url, {headers, params });
   }
 }
